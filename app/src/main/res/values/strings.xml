@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FieldWireCC</string>
+    <string name="load">Loading... Please Wait</string>
+    <string name="end">No More Images</string>
+    <string name="network_error">Network Error</string>
+    <string name="delete">delete</string>
+    <string name="search">Search</string>
+</resources>
