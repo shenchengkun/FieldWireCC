@@ -1,6 +1,9 @@
 package com.example.cheng.fieldwirecc.View;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -28,21 +31,38 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
     private RecyclerView historyRecyclerView;
     private ArrayList<String> historyList;
     private HistoryAdapter histortyAdapter;
-    private int curPage = 1;
-    private String curKeyword = "";
+    private int curPage;
+    private String curKeyword;
     protected String mState = "Normal";
     public static ArrayList<SearchResponseData> list;
 
-    @Override
+    private final int RC_SEARCH = 1;
+    private final int INTERVAL = 300;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == RC_SEARCH) {
+                curPage = 1;
+                list.clear();
+                setState("Loading");
+                presenter.getSearch(curKeyword,curPage);
+            }
+        }
+    };
+
+
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        presenter = new Presenter(this);
+        presenter = new Presenter(this,getApplicationContext());
         searchView = findViewById(R.id.search_view);
 
+        list = (ArrayList)presenter.readLastList();
+        SharedPreferences lastState= getSharedPreferences("last_state", 0);
+        curPage = lastState.getInt("cur_page",1);
+        curKeyword = lastState.getString("cur_keyword","");
         recyclerView = findViewById(R.id.recycler_view);
-        list = new ArrayList<>();
         recyclerViewAdapter = new RecyclerViewAdapter(this,list);
         recyclerView.setAdapter(recyclerViewAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
@@ -56,9 +76,9 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
         });
         recyclerView.setLayoutManager(layoutManager);
 
+        historyList = (ArrayList<String>) presenter.readHistory();
         historyRecyclerView = findViewById(R.id.history_list);
         historyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        historyList = (ArrayList<String>) presenter.readHistory(getApplicationContext());
         histortyAdapter = new HistoryAdapter(this,historyList);
         historyRecyclerView.setAdapter(histortyAdapter);
     }
@@ -70,21 +90,30 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                curKeyword = s;
-                curPage = 1;
-                list.clear();
-                setState("Loading");
-                presenter.getSearch(curKeyword,curPage);
                 searchView.clearFocus();
-                historyRecyclerView.setVisibility(View.INVISIBLE);
                 historyList.add(0,s);
                 histortyAdapter.notifyDataSetChanged();
+                historyRecyclerView.setVisibility(View.INVISIBLE);
+                if(!s.equals(curKeyword)) {
+                    curPage = 1;
+                    list.clear();
+                    setState("Loading");
+                    presenter.getSearch(s,curPage);
+                }
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 historyRecyclerView.setVisibility(View.VISIBLE);
+
+                if (mHandler.hasMessages(RC_SEARCH)) {
+                    mHandler.removeMessages(RC_SEARCH);
+                }
+                if(!s.trim().equals("")) {
+                    curKeyword = s;
+                    mHandler.sendEmptyMessageDelayed(RC_SEARCH, INTERVAL);
+                }
                 return false;
             }
         });
@@ -153,7 +182,13 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
 
     @Override
     protected void onDestroy() {
-        presenter.writeHistory(historyList,getApplicationContext());
+        presenter.writeHistory(historyList);
+        presenter.writeLastList(list);
+        SharedPreferences lastState= getSharedPreferences("last_state", 0);
+        SharedPreferences.Editor editor = lastState.edit();
+        editor.putInt("cur_page",curPage);
+        editor.putString("cur_keyword",curKeyword);
+
         presenter.detachCallback();
         super.onDestroy();
     }

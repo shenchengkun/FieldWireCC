@@ -5,6 +5,11 @@ public class SearchResponseData {
     private String id;
     private boolean is_album;
 
+    public SearchResponseData(String id, String link) {
+        this.link = link;
+        this.id = id;
+    }
+
     public boolean isIs_album() {
         return is_album;
     }

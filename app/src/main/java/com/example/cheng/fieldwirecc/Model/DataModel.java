@@ -17,13 +17,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DataModel {
 
-    private static final String BASE_URL = "https://api.imgur.com/";
     private PresenterCallback presenterCallback;
     private HttpService httpService;
-    private SearchHistoryService searchHistoryService;
+    //private SearchHistoryService searchHistoryService;
+    private SqliteService sqliteService;
+
+    private static final String BASE_URL = "https://api.imgur.com/";
     private String clientID = "Client-ID 6c5b74d4a6a80c9";
 
-    public DataModel(PresenterCallback presenterCallback) {
+    public DataModel(PresenterCallback presenterCallback,Context context) {
         this.presenterCallback = presenterCallback;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -31,7 +33,8 @@ public class DataModel {
                 .build();
         httpService = retrofit.create(HttpService.class);
 
-        searchHistoryService = new SearchHistoryService();
+        //searchHistoryService = new SearchHistoryService();
+        sqliteService = new SqliteService(context,"FieldDB",null,1);
     }
 
     public void getSearch(String keyWord,int page){
@@ -43,11 +46,7 @@ public class DataModel {
                                            Response<SearchResponse> response) {
                         if(response.isSuccessful()){
                             SearchResponse searchResponse = response.body();
-                            List<SearchResponseData> notAlbum = new ArrayList<>();
-                            for (SearchResponseData searchResponseData:searchResponse.getData()){
-                                if(!searchResponseData.isIs_album()) notAlbum.add(searchResponseData);
-                            }
-                            presenterCallback.onSuccess(notAlbum);
+                            presenterCallback.onSuccess(searchResponse.getData());
                         }else{
                             presenterCallback.onFailure();
                         }
@@ -61,11 +60,21 @@ public class DataModel {
         );
     }
 
-    public List<String> readHistory(Context context){
-        return searchHistoryService.readFromFile(context);
+    public List<String> readHistory(){
+        //return searchHistoryService.readFromFile(context);
+        return sqliteService.getSearchHistory();
     }
 
-    public void writeHistory(List<String> list,Context context){
-        searchHistoryService.writeToFile(list,context);
+    public void writeHistory(List<String> list){
+        //searchHistoryService.writeToFile(list,context);
+        sqliteService.upgradeSearchHistory(list);
+    }
+
+    public List<SearchResponseData> readLastList(){
+        return sqliteService.getLastList();
+    }
+
+    public void writeLastList(List<SearchResponseData> list){
+        sqliteService.upgradeLastList(list);
     }
 }
