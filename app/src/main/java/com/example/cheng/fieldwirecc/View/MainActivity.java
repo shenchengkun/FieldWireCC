@@ -20,6 +20,7 @@ import com.example.cheng.fieldwirecc.View.Adapters.HistoryAdapter;
 import com.example.cheng.fieldwirecc.View.Adapters.OnRcvScrollListener;
 import com.example.cheng.fieldwirecc.View.Adapters.RecyclerViewAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
     private int curPage;
     private String curKeyword;
     protected String mState = "Normal";
-    public static ArrayList<SearchResponseData> list;
+    private static ArrayList<SearchResponseData> list;
 
     private final int RC_SEARCH = 1;
     private final int INTERVAL = 300;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
             public void onItemClick(int position) {
                 Intent intent = new Intent(getApplicationContext(),ImageZoomActivity.class);
                 //intent.putParcelableArrayListExtra("imageList",list);
+                intent.putExtra("list", (Serializable) list);
                 intent.putExtra("index", position);
                 startActivity(intent);
             }

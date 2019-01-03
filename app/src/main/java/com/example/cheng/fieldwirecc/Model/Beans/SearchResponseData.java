@@ -1,6 +1,8 @@
 package com.example.cheng.fieldwirecc.Model.Beans;
 
-public class SearchResponseData {
+import java.io.Serializable;
+
+public class SearchResponseData implements Serializable {
     private String link;
     private String id;
     private boolean is_album;

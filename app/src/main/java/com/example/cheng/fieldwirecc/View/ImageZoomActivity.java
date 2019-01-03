@@ -16,6 +16,8 @@ import com.bm.library.PhotoView;
 import com.bumptech.glide.Glide;
 import com.example.cheng.fieldwirecc.Model.Beans.SearchResponseData;
 import com.example.cheng.fieldwirecc.R;
+import com.example.cheng.fieldwirecc.View.CumsomViews.ZoomImageView;
+import com.example.cheng.fieldwirecc.View.ImageLoader.MyImageLoader;
 
 import java.util.ArrayList;
 
@@ -33,7 +35,8 @@ public class ImageZoomActivity extends Activity {
         if(intent.getExtras() != null){
             index = intent.getIntExtra("index", 0);
             //list = intent.getParcelableArrayListExtra("imageList");
-            list = MainActivity.list;
+            //list = MainActivity.list;
+            list = (ArrayList<SearchResponseData>) intent.getSerializableExtra("list");
         }
 
         viewPager = findViewById(R.id.imageBrowseViewPager);
@@ -61,20 +64,25 @@ public class ImageZoomActivity extends Activity {
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            final PhotoView image = new PhotoView(context);
-            image.enable();
-            image.setScaleType(ImageView.ScaleType.CENTER_INSIDE) ;
-            image.setMaxScale(4.0f);
+
+            final ZoomImageView image = new ZoomImageView(context);
+            //image.enable();
+            //image.setScaleType(ImageView.ScaleType.CENTER_INSIDE) ;
+            //image.setMaxScale(4.0f);
+            /*
             Glide.with(context)
                     .load(list.get(position).getLink())
                     .into(image);
+                    */
+            MyImageLoader.getInstance().loadImage(list.get(position).getLink(),image,true);
+            /*
             image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    image.disenable();
+                    //image.disenable();
                     finish();
                 }
-            });
+            });*/
             container.addView(image);
             return image;
         }

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.example.cheng.fieldwirecc.Model.Beans.SearchResponseData;
 import com.example.cheng.fieldwirecc.R;
+import com.example.cheng.fieldwirecc.View.ImageLoader.MyImageLoader;
 
 import java.util.List;
 
@@ -45,8 +46,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder myHolder, final int i) {
         if(myHolder instanceof RecyclerViewAdapter.MyHolder) {
+            /*
             Glide.with(context).load("https://i.imgur.com/" +
                     list.get(i).getId() + "m.jpg").into(((MyHolder)myHolder).imageView);
+                    */
+            MyImageLoader.getInstance().loadImage("https://i.imgur.com/" +
+                    list.get(i).getId() + "m.jpg",((MyHolder)myHolder).imageView,true);
             ((MyHolder)myHolder).imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
