@@ -1,5 +1,5 @@
 # FieldWireCC
-
+01/01/2019
 I have completed key features for this project:
 1,The app uses MVP architecture to decouple codes. To avoid crashing, I take many things into consideration such as Retrofit asynchronous operations ,activity life cycle callbacks, networking errors
 2,Self defined scroll listener was made to implement Infinite scrolling , elegant Glide and Retrofit cache configurations were made to achieve precaching
