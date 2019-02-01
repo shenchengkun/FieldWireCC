@@ -2,6 +2,7 @@ package com.example.cheng.fieldwirecc.Presenter;
 
 import android.content.Context;
 
+import com.example.cheng.fieldwirecc.Model.Beans.NYTtopBeans.NYTResponseResult;
 import com.example.cheng.fieldwirecc.Model.Beans.SearchResponseData;
 import com.example.cheng.fieldwirecc.Model.DataModel;
 import com.example.cheng.fieldwirecc.View.ViewCallback;
@@ -34,6 +35,12 @@ public class Presenter implements PresenterCallback{
         dataModel = new DataModel(this,context);
     }
 
+    public void getNYTop(){
+        dataModel.getNYTop();
+    }
+    public void displayNYT(List<NYTResponseResult> list){
+        viewCallback.displayNYT(list);
+    }
     public void getSearch(String keyWord,int page){
         dataModel.getSearch(keyWord,page);
     }

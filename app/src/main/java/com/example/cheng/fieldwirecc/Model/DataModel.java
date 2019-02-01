@@ -1,7 +1,10 @@
 package com.example.cheng.fieldwirecc.Model;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.example.cheng.fieldwirecc.Model.Beans.NYTtopBeans.NYTResponse;
 import com.example.cheng.fieldwirecc.Model.Beans.SearchResponse;
 import com.example.cheng.fieldwirecc.Model.Beans.SearchResponseData;
 import com.example.cheng.fieldwirecc.Presenter.PresenterCallback;
@@ -17,6 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DataModel {
 
+    private final HttpServiceNY httpService1;
     private PresenterCallback presenterCallback;
     private HttpService httpService;
     //private SearchHistoryService searchHistoryService;
@@ -25,16 +29,41 @@ public class DataModel {
     private static final String BASE_URL = "https://api.imgur.com/";
     private String clientID = "Client-ID 6c5b74d4a6a80c9";
 
+    private static final String BASE_URL_NY = "https://api.nytimes.com/";
+    private String clientID_NY = "wGHGNcHlKeJ4D6PlMfTN75AbFTE19wQq";
+
     public DataModel(PresenterCallback presenterCallback,Context context) {
         this.presenterCallback = presenterCallback;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
+        Retrofit retrofit1 = new Retrofit.Builder()
+                .baseUrl(BASE_URL_NY)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
         httpService = retrofit.create(HttpService.class);
+        httpService1 = retrofit1.create(HttpServiceNY.class);
 
         //searchHistoryService = new SearchHistoryService();
         sqliteService = new SqliteService(context,"FieldDB",null,1);
+    }
+
+    public void getNYTop(){
+        httpService1.getNYTop(clientID_NY).enqueue(new Callback<NYTResponse>() {
+            @Override
+            public void onResponse(Call<NYTResponse> call, Response<NYTResponse> response) {
+                if (response.isSuccessful()){
+                    NYTResponse nytResponse = response.body();
+                    presenterCallback.displayNYT(nytResponse.getResults());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NYTResponse> call, Throwable t) {
+            }
+        });
     }
 
     public void getSearch(String keyWord,int page){

@@ -12,7 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
+import com.example.cheng.fieldwirecc.Model.Beans.NYTtopBeans.NYTResponseResult;
 import com.example.cheng.fieldwirecc.Model.Beans.SearchResponseData;
 import com.example.cheng.fieldwirecc.Presenter.Presenter;
 import com.example.cheng.fieldwirecc.R;
@@ -165,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
                 searchView.setQuery(temp,true);
             }
         });
+        presenter.getNYTop();
     }
     protected void setState(String mState) {
         this.mState = mState;
@@ -206,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements ViewCallback{
     @Override
     public void onFailure(){
         setState("NetWorkError");
+    }
+
+    @Override
+    public void displayNYT(List<NYTResponseResult> list) {
+        Toast.makeText(this,list.get(0).getShort_url(),Toast.LENGTH_SHORT).show();
     }
 
 }
