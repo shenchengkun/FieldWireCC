@@ -21,3 +21,7 @@ ________________________________________________________________________________
 01/31/2019, now, the follow up is to implement my own image loading cache library, zoomable custom imageview, search view debounce,
 sqlite for search history, also TripActions's code challenge is basicly to add NY Times top story apis, all other features are
 the same or even simpler
+
+____________________________________________________________________________________________________________
+
+04/07/2019, learning MVVM recently, could consider to use MVVM to finish this project
